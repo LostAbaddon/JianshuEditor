@@ -227,7 +227,7 @@ function analyzeArticles (articles) {
 					results += '\n|' + table_index + '|[' + article.author + '](' + article.authorURL + ')|[《' + article.title + '》](' + article.url + ')|' + extras + '|';
 				}
 				else {
-					results += '\n|' + table_index + '|[' + article.author + '](' + article.authorURL + ')|[《' + article.title + '》](' + article.url + ')|' + value + '　　' + extras + '|';
+					results += '\n|' + table_index + '|[' + article.author + '](' + article.authorURL + ')|[《' + article.title + '》](' + article.url + ')|' + value + (extras.length > 0 ? '　｜　' : '') + extras + '|';
 				}
 				table_index++;
 			}
@@ -302,7 +302,7 @@ function analyzeArticles (articles) {
 					results += '\n|' + table_index + '|[' + author + '](' + info.url + ')|' + extras + '|';
 				}
 				else {
-					results += '\n|' + table_index + '|[' + author + '](' + info.url + ')|' + value + '　　' + extras + '|';
+					results += '\n|' + table_index + '|[' + author + '](' + info.url + ')|' + value + (extras.length > 0 ? '　｜　' : '') + extras + '|';
 				}
 			}
 			table_index++;
@@ -448,11 +448,11 @@ function analyzeArticles (articles) {
 
 	// Recommendation Most
 	arrangeArticle('recommendation', {pro: '', post: '', title: '推荐指数'}, '上周最受欢迎文章', {hideData: true});
-	results += ">　　这是根据两份点赞榜与两份评论榜综合统计出的最受欢迎文章。\n";
+	results += ">　　这是根据两份点赞榜与两份评论榜综合统计出的上周最受欢迎文章，大家鼓掌！\n　　在下文会具体介绍这些文章，大家不要着急哦～～\n";
 
 	// Recommendation Most
 	arrangeAuthor('recommendation', {pro: '', post: '', title: '推荐指数'}, '上周最受欢迎作者', {hideData: true});
-	results += ">　　这是根据两份点赞榜与两份评论榜综合统计出的最受欢迎作者。\n";
+	results += ">　　这是根据两份点赞榜与两份评论榜综合统计出的上周最受欢迎作者，大家鼓掌！\n　　在下文会着重介绍这几位作者哦～～\n";
 
 	results += "\n----\n";
 
