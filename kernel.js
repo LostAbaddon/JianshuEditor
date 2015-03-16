@@ -334,13 +334,11 @@ function analyzeArticles (articles) {
 	results += '\n##整体情况：\n';
 	results += '\n　　本次活动统计从[' + articles[articles.length - 1].author + '](' + articles[articles.length - 1].authorURL + ')的[《' + articles[articles.length - 1].title + '》](' + articles[articles.length - 1].url + ')到[' + articles[0].author + '](' + articles[0].authorURL + ')的[《' + articles[0].title + '》](' + articles[0].url + ')，总共收到了来自' + authors.length + '位作者的' + total + '篇文章，共计' + wordages + '字。';
 	results += '\n　　共有' + readers + '人次阅读，收获了' + likes + '个赞，引发了' + comments + '条讨论。';
-	results += '\n\n>　　';
-	results += '\n\n　　下面是具体榜单：\n';
+	results += '\n\n>　　\n';
 	results += '\n----\n'
 
 	// GetLists
 	var num, MAX = 20, MAX2 = 10, mentions = [], mentions2 = [];
-	results += '\n##文章榜单：\n';
 	function round (v) {
 		return Math.round(v * 100) / 100;
 	}
@@ -381,70 +379,6 @@ function analyzeArticles (articles) {
 		article.recommendation = arrange.likeRate * ALR + arrange.like * ALK + arrange.commentRate * ACR + arrange.comment * ACM;
 	});
 
-	// Like Most
-	arrangeArticle('like', {pro: '共获得', post: '个赞', title: '点赞数'}, '总点赞榜');
-	// LR Most
-	arrangeArticle('likeRate',
-		{
-			pro: '转化率为：',
-			post: 'LPR',
-			title: '点赞／阅读'
-		},
-		'均点赞榜',
-		{
-			showItem: true,
-			calculate: round,
-			extras: [{
-				title: '',
-				item: 'like',
-				end: '／'
-			}, {
-				title: '',
-				item: 'read',
-				end: ''
-			}]
-		}
-	);
-	results += ">　　这两份分别是总点赞榜与均点赞榜。\n";
-	// Comment Most
-	arrangeArticle('comment', {pro: '共有', post: '条评论', title: '评论数'}, '总评论榜');
-	// CR Most
-	arrangeArticle('commentRate',
-		{
-			pro: '转化率为：',
-			post: 'CPR',
-			title: '评论／阅读'
-		},
-		'均评论榜',
-		{
-			showItem: true,
-			calculate: round,
-			extras: [{
-				title: '',
-				item: 'comment',
-				end: '／'
-			}, {
-				title: '',
-				item: 'read',
-				end: ''
-			}]
-		}
-	);
-	results += ">　　这两份分别是总评论榜与均评论榜。\n";
-	// Read Most
-	arrangeArticle('read', {pro: '共有', post: '人次阅读', title: '阅读量'}, '阅读榜');
-	results += ">　　\n";
-	// Word Most
-	arrangeArticle('word', {pro: '共有', post: '字', title: '字数'}, '字数榜');
-	results += ">　　\n";
-	// Recommendation Most
-	arrangeArticle('recommendation', {pro: '', post: '', title: '推荐指数'}, '上周最受欢迎文章', {hideData: true});
-	results += ">　　这是根据两份点赞榜与两份评论榜综合统计出的最受欢迎文章。\n";
-
-	results += '\n----\n';
-
-	// Author Analyze
-	results += '\n##作者榜单：\n';
 	authors.map(function (author) {
 		var info = authorInfo[author];
 		var articles = info.articles;
@@ -509,6 +443,83 @@ function analyzeArticles (articles) {
 		info.recommendation = arrange.likeRate * ALR + arrange.like * ALK + arrange.commentRate * ACR + arrange.comment * ACM;
 	});
 
+	// Recommendations:
+	results += "\n##上周最受欢迎：\n";
+
+	// Recommendation Most
+	arrangeArticle('recommendation', {pro: '', post: '', title: '推荐指数'}, '上周最受欢迎文章', {hideData: true});
+	results += ">　　这是根据两份点赞榜与两份评论榜综合统计出的最受欢迎文章。\n";
+
+	// Recommendation Most
+	arrangeAuthor('recommendation', {pro: '', post: '', title: '推荐指数'}, '上周最受欢迎作者', {hideData: true});
+	results += ">　　这是根据两份点赞榜与两份评论榜综合统计出的最受欢迎作者。\n";
+
+	results += "\n----\n";
+
+	results += '\n##文章榜单：\n';
+
+	// Like Most
+	arrangeArticle('like', {pro: '共获得', post: '个赞', title: '点赞数'}, '总点赞榜');
+	// LR Most
+	arrangeArticle('likeRate',
+		{
+			pro: '转化率为：',
+			post: 'LPR',
+			title: '点赞／阅读'
+		},
+		'均点赞榜',
+		{
+			showItem: true,
+			calculate: round,
+			extras: [{
+				title: '',
+				item: 'like',
+				end: '／'
+			}, {
+				title: '',
+				item: 'read',
+				end: ''
+			}]
+		}
+	);
+	results += ">　　这两份分别是总点赞榜与均点赞榜。\n";
+	// Comment Most
+	arrangeArticle('comment', {pro: '共有', post: '条评论', title: '评论数'}, '总评论榜');
+	// CR Most
+	arrangeArticle('commentRate',
+		{
+			pro: '转化率为：',
+			post: 'CPR',
+			title: '评论／阅读'
+		},
+		'均评论榜',
+		{
+			showItem: true,
+			calculate: round,
+			extras: [{
+				title: '',
+				item: 'comment',
+				end: '／'
+			}, {
+				title: '',
+				item: 'read',
+				end: ''
+			}]
+		}
+	);
+	results += ">　　这两份分别是总评论榜与均评论榜。\n";
+	// Read Most
+	arrangeArticle('read', {pro: '共有', post: '人次阅读', title: '阅读量'}, '阅读榜');
+	results += ">　　\n";
+	// Word Most
+	arrangeArticle('word', {pro: '共有', post: '字', title: '字数'}, '字数榜');
+	results += ">　　\n";
+
+	results += '\n----\n';
+
+	// Author Analyze
+	results += '\n##作者榜单：\n';
+
 	// Like Most
 	arrangeAuthor('like', {pro: '共获得', post: '个赞', title: '点赞数'}, '总点赞榜');
 	// LR Most
@@ -568,9 +579,6 @@ function analyzeArticles (articles) {
 	// Word Most
 	arrangeAuthor('word', {pro: '共写了', post: '字', title: '字数'}, '总码字榜');
 	results += ">　　\n";
-	// Recommendation Most
-	arrangeAuthor('recommendation', {pro: '', post: '', title: '推荐指数'}, '上周最受欢迎作者', {hideData: true});
-	results += ">　　这是根据两份点赞榜与两份评论榜综合统计出的最受欢迎作者。\n";
 
 	results += '\n----\n';
 
