@@ -154,7 +154,7 @@ function loadAndStatic (list) {
 
 function analyzeArticles (articles) {
 	show('Analyzing...');
-	var results = '#卷首语\n\n----\n';
+	var results = '#卷首语\n\n----\n\n';
 	results += '#上周活动数据统计\n';
 	article_records = {};
 	articles.map(function (art) {
@@ -439,7 +439,7 @@ function analyzeArticles (articles) {
 	results += ">　　\n";
 	// Recommendation Most
 	arrangeArticle('recommendation', {pro: '', post: '', title: '推荐指数'}, '上周最受欢迎文章', {hideData: true});
-	results += ">　　这是根据两份点赞榜与两份评论榜综合统计出的推荐文章。\n";
+	results += ">　　这是根据两份点赞榜与两份评论榜综合统计出的最受欢迎文章。\n";
 
 	results += '\n----\n';
 
@@ -570,7 +570,7 @@ function analyzeArticles (articles) {
 	results += ">　　\n";
 	// Recommendation Most
 	arrangeAuthor('recommendation', {pro: '', post: '', title: '推荐指数'}, '上周最受欢迎作者', {hideData: true});
-	results += ">　　这是根据两份点赞榜与两份评论榜综合统计出的推荐作者。\n";
+	results += ">　　这是根据两份点赞榜与两份评论榜综合统计出的最受欢迎作者。\n";
 
 	results += '\n----\n';
 
