@@ -18,7 +18,7 @@ function statistics (from, to) {
 	var links = [].map.call(list, function (article) {
 		var link = article.querySelector('h5 a');
 		var title = link.innerHTML;
-		if (!!title.match(/^[#《].+?[总小]结$/)) return null;
+		if (!!title.match(/^[#《].+?([总小]结|好文推荐)$/)) return null;
 		var slug = link.getAttribute('href');
 		var comment = article.querySelector('.fa-comments-o');
 		var like = article.querySelector('.like-icon-button');
