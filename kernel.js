@@ -7,12 +7,16 @@ function show (msg) {
 	mention.innerHTML = msg;
 }
 
+function getCollectionID () {
+	return window.location.pathname.replace(/^\/collection\//, '');
+}
+
 function statistics (from, to) {
 	show('Start Statistics');
 	start_time = new Date().getTime();
 
-	from = from.toLowerCase();
-	to = to.toLowerCase();
+	from = from.toLowerCase().trim();
+	to = to.toLowerCase().trim();
 	var list = document.querySelectorAll('#list-container li');
 	var indexFrom = -1, indexTo = -1, i = 0;
 	var links = [].map.call(list, function (article) {
@@ -23,8 +27,8 @@ function statistics (from, to) {
 		var comment = article.querySelector('.fa-comments-o');
 		var like = article.querySelector('.like-icon-button');
 		if (slug) slug = slug.replace('/p/', '');
-		if (title.toLowerCase() === from || slug.toLowerCase() === from) indexFrom = i;
-		if (title.toLowerCase() === to || slug.toLowerCase() === to) indexTo = i;
+		if (title.toLowerCase().trim() === from || slug.toLowerCase().trim() === from) indexFrom = i;
+		if (title.toLowerCase().trim() === to || slug.toLowerCase().trim() === to) indexTo = i;
 		if (comment) {
 			comment = comment.parentElement.innerText.trim() * 1;
 		}
@@ -40,7 +44,10 @@ function statistics (from, to) {
 		i++;
 		return [title, slug, article, comment, like];
 	});
-	if (indexFrom === -1 || indexTo === -1) return true;
+	if (indexFrom === -1 || indexTo === -1) {
+		console.log('From:', indexFrom, 'To:', indexTo);
+		return true;
+	}
 	if (indexFrom > indexTo) {
 		indexTo = indexFrom + indexTo;
 		indexFrom = indexTo - indexFrom;
@@ -56,8 +63,10 @@ function statistics (from, to) {
 		i++;
 		return false;
 	});
+	console.log('Get Links:', list.length);
 
 	setTimeout(function () {
+		console.log('Start Page-Loading and Analyzing...');
 		loadAndStatic(list);
 	}, 0);
 	return true;
@@ -149,6 +158,7 @@ function loadAndStatic (list) {
 			}
 		);
 	}
+	show('完成度：' + 0 + '/' + total);
 	loadPage(0);
 }
 
@@ -583,26 +593,17 @@ function analyzeArticles (articles) {
 	results += '\n----\n';
 
 	md_result = results;
-	localStorage.result = results;
-	localStorage.articles = JSON.stringify(articles);
+	localStorage[getCollectionID() + '_result'] = results;
 
 	show('<p>Done</p>');
 	tamarked_task = function (data) {
 		html_result = data.output;
 		pad.innerHTML = data.output;
-		localStorage.output = data.output;
+		localStorage[getCollectionID() + '_output'] = html_result;
 		pad.style.display = 'block';
 		showHTML = true;
 		if (!switcher.onClick) {
-			switcher.onClick = function () {
-				if (showHTML) {
-					pad.innerHTML = '<p>' + md_result.replace(/\n/g, '<br>') + '</p>';
-				}
-				else {
-					pad.innerHTML = html_result;
-				}
-				showHTML = !showHTML;
-			};
+			switcher.onClick = switchEvent;
 			switcher.addEventListener('click', switcher.onClick);
 		}
 		mention.appendChild(switcher);
@@ -696,7 +697,22 @@ function getAnalyzeReport (data) {
 	});
 	md_result += '\n----\n';
 
+	localStorage[getCollectionID() + '_result'] = md_result;
 	send('tamarked', md_result);
+}
+
+function showResult () {
+	var result = localStorage[getCollectionID() + '_result'];
+	var output = localStorage[getCollectionID() + '_output'];
+	show('<p>Last Result</p>');
+	pad.innerHTML = output;
+	pad.style.display = 'block';
+	showHTML = true;
+	if (!switcher.onClick) {
+		switcher.onClick = switchEvent;
+		switcher.addEventListener('click', switcher.onClick);
+	}
+	mention.appendChild(switcher);
 }
 
 var start_time = 0, start_analyze = 0;
@@ -722,10 +738,22 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 		case "GotAnalyzeReport":
 			getAnalyzeReport(msg);
 		break;
+		case "showResult":
+			showResult();
+		break;
 	}
 });
 
 var pad, mention, switcher, md_result, html_result, showHTML = true, article_records;
+function switchEvent () {
+	if (showHTML) {
+		pad.innerHTML = '<p>' + localStorage[getCollectionID() + '_result'].replace(/\n/g, '<br>') + '</p>';
+	}
+	else {
+		pad.innerHTML = localStorage[getCollectionID() + '_output'];
+	}
+	showHTML = !showHTML;
+}
 
 document.addEventListener('DOMContentLoaded', function () {
 	switcher = document.createElement('button');

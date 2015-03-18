@@ -64,6 +64,14 @@ var initButtons = function () {
 				}
 			}
 		}
+		// Entry
+		isWidget = btn.classList.contains('entry');
+		if (isWidget) {
+			target = btn.getAttribute('target');
+			if (target && target.length > 0) {
+				entryEvent(btn, target);
+			}
+		}
 	});
 };
 var linkPanelSwitch = function (button, panelID) {
@@ -95,6 +103,11 @@ var triggerEvent = function (button, triggerName, options) {
 		send(triggerName, data);
 	});
 };
+var entryEvent = function (button, target) {
+	button.addEventListener('click', function (e) {
+		send(target);
+	})
+}
 
 document.addEventListener('DOMContentLoaded', function () {
 	chrome.tabs.query({currentWindow: true, active: true}, function (tabs) {
