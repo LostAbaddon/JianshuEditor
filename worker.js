@@ -413,7 +413,12 @@ function getFilteredKW (keywords, wordage) {
 	keywords = keywords.filter(function (info) {
 		return info.power >= limit;
 	});
-	limit = keywords[0].power;
+	if (keywords.length > 0) {
+		limit = keywords[0].power;
+	}
+	else {
+		limit = 1;
+	}
 	keywords.map(function (info) {
 		info.power = info.power / limit * 100;
 		info.ratio = info.number / wordage;
