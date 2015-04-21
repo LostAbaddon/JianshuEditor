@@ -23,6 +23,7 @@ function statistics (from, to) {
 		var link = article.querySelector('h5 a');
 		var title = link.innerHTML;
 		if (!!title.match(/^[#《].+?([总小]结|好文推荐)$/)) return null;
+		title = title.replace(/\|/g, '｜');
 		var slug = link.getAttribute('href');
 		var comment = article.querySelector('.fa-comments-o');
 		var like = article.querySelector('.like-icon-button');
