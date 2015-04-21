@@ -96,7 +96,7 @@ function loadAndStatic (list) {
 		var article = document.createElement('div'), temp;
 		article.innerHTML = text;
 		var content = getContent(article.querySelector('.show-content'));
-		var title = article.querySelector('h1').innerText.trim();
+		var title = article.querySelector('h1').innerText.trim().replace(/\|/g, '｜');
 		temp = article.querySelector('.author-info .info-r>p>a');
 		var author = {
 			name : temp.innerText.replace(/\n/gi, '').trim(),
