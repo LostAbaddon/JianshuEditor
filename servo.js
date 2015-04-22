@@ -170,7 +170,6 @@ function reportFinalReport (result) {
 	});
 	// console.log(result);
 	send(requestID, 'GotAnalyzeReport', result);
-	// kwTasks = {};
 }
 
 var doesCurrentSend = {};
