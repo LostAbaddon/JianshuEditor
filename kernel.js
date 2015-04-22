@@ -239,6 +239,7 @@ function createArticleReport (articles) {
 				table_index++;
 			}
 			num --;
+			article._select++;
 			return num <= 0;
 		});
 		results += '\n\n';
@@ -345,13 +346,14 @@ function createArticleReport (articles) {
 	results += '\n----\n'
 
 	// GetLists
-	var num, MAX = 20, MAX2 = 10, mentions = [], mentions2 = [];
+	var num, MAX = 10, MAX2 = 10, mentions = [], mentions2 = [];
 	function round (v) {
 		return Math.round(v * 100) / 100;
 	}
 
-	var ALR = 8, ALK = 6, ACR = 3, ACM = 5;
+	var ALR = 8, ALK = 6, ACR = 5, ACM = 4;
 
+	// Recommendation Index
 	num = articles.length;
 	articles.sort(function (art1, art2) {
 		return art2.like - art1.like;
@@ -380,7 +382,6 @@ function createArticleReport (articles) {
 		article.arrange.commentRate = num * num;
 		num--;
 	});
-
 	articles.map(function (article) {
 		var arrange = article.arrange;
 		article.recommendation = arrange.likeRate * ALR + arrange.like * ALK + arrange.commentRate * ACR + arrange.comment * ACM;
@@ -443,7 +444,6 @@ function createArticleReport (articles) {
 		authorInfo[info].arrange.commentRate = num * num;
 		num--;
 	});
-
 	authors.map(function (info) {
 		info = authorInfo[info];
 		var arrange = info.arrange;
@@ -601,6 +601,7 @@ function analyzeArticles (articles) {
 	results = 0;
 	articles.map(function (note) {
 		note._index = results;
+		note._select = 0;
 		results++;
 	});
 
@@ -737,7 +738,9 @@ function showResult () {
 
 function showArticleFilter () {
 	article_records.sort(function (noteA, noteB) {
-		return noteA._index - noteB._index;
+		var index = noteB._select - noteA._select;
+		if (index === 0) index = noteA._index - noteB._index;
+		return index;
 	});
 
 	openElement(article_filter);
