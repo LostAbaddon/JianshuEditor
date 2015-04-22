@@ -48,6 +48,24 @@ function requestHandler (request, sender) {
 		case "ClusterAnalyzeDone":
 			reportFinalReport(data);
 		break;
+		case "finishAnalyze":
+			kwTasks = {};
+			taskList = [];
+			analyzing = false;
+			shouldReport = false;
+			requestID = -1;
+		break;
+		case "test":
+			console.log(request);
+			console.log(kwTasks);
+			console.log(taskList);
+			console.log(analyzing);
+			console.log(shouldReport);
+			console.log(requestID);
+		break;
+		default:
+			console.log('Get Request:');
+			console.log(request);
 	}
 }
 
