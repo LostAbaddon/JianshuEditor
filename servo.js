@@ -165,23 +165,3 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 		delete doesCurrentSend[request.__id];
 	}
 });
-
-// chrome.webRequest.onBeforeRequest.addListener(function (details) {
-// 	var url = details.url;
-// 	if (pageRequest.some(function (reg) {
-// 		return reg.test(url);
-// 	})) {
-// 		chrome.tabs.sendMessage(details.tabId, {action: "content_request", url: url});
-// 	}
-// }, filter);
-// chrome.webRequest.onCompleted.addListener(function (details) {
-// 	var url = details.url;
-// 	if (pageRequest.some(function (reg) {
-// 		return reg.test(url);
-// 	})) {
-// 		chrome.tabs.sendMessage(details.tabId, {action: "content_loaded", url: url});
-// 	}
-// 	else if (/\/writer\/notes\/\w*\/content/i.test(url)) {
-// 		chrome.tabs.sendMessage(details.tabId, {action: "writer_loaded"});
-// 	}
-// }, filter);
