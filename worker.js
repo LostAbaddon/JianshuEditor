@@ -428,6 +428,7 @@ function getFilteredKW (keywords, wordage) {
 
 // 计算集团性
 function getCluster (data) {
+	console.log("Worker Get Cluster!!!!!");
 	var keywords = {}, structure_limit = 0;
 	Object.keys(data).map(function (slug) {
 		structure_limit += 1;

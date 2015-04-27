@@ -163,11 +163,13 @@ function loadAndStatic (list) {
 	loadPage(0);
 }
 
+const SHOW_MENTIONED_AUTHORS = true;
 function createArticleReport (articles) {
 	show('分析中...');
 	var results = '#卷首语\n\n----\n\n';
 	results += '#上周活动数据统计\n';
 
+	var num, MAX = 10, MAX2 = 10, mentions = [], mentions2 = [];
 	function arrangeArticle (itemName, words, title, options) {
 		results += '\n###' + title + '：\n';
 		if (options && options.description) {
@@ -346,7 +348,6 @@ function createArticleReport (articles) {
 	results += '\n----\n'
 
 	// GetLists
-	var num, MAX = 10, MAX2 = 10, mentions = [], mentions2 = [];
 	function round (v) {
 		return Math.round(v * 100) / 100;
 	}
@@ -589,9 +590,15 @@ function createArticleReport (articles) {
 
 	results += '\n----\n';
 
+	if (SHOW_MENTIONED_AUTHORS) {
+		results += '@' + mentions.join(' @') + '\n';
+		results += '\n----\n';
+	}
+
 	return {
 		report: results,
-		author_info: authorInfo
+		author_info: authorInfo,
+		mentions: mentions
 	}
 }
 
@@ -630,6 +637,7 @@ function analyzeArticles (articles) {
 	send('tamarked', md_result);
 
 	analyzeTrend(articles, authorInfo);
+	send('GetKeyWordReport');
 	show('<p>分析耗时: ' + (start_time / 1000) + '秒</p>');
 }
 
@@ -657,11 +665,13 @@ function analyzeTrend (articles, authors) {
 	console.log(auts.join('\n'));
 	show('<p>Waiting For Analyze Report</p>');
 	start_analyze = new Date().getTime();
-	send('GetKeyWordReport');
 }
 
 const STRUCTURE_LIMIT = 0.7;
+const SHOW_KEYWORD_CLUSTER = false;
+const SHOW_TOPIC_CLUSTER = true;
 function getAnalyzeReport (data) {
+	console.log('Get Analyze Report!!!!');
 	start_analyze = (new Date().getTime()) - start_analyze;
 	start_analyze /= 1000;
 	show('Get KW-Report! TimeSpent: ' + start_analyze + 's');
@@ -677,7 +687,7 @@ function getAnalyzeReport (data) {
 	analy_result += '\n##最常见关键词：'
 	analy_result += '\n\n| |关键词|出现次数|'
 	// analy_result += '\n\n| |关键词|出现次数|影响因子|权重|频率|'
-	analy_result += '\n|-|-|-|-|'
+	analy_result += '\n|-|-|-|'
 	var i = 0, limit = 500;
 	data.keywords.some(function (info) {
 		i++;
@@ -689,32 +699,36 @@ function getAnalyzeReport (data) {
 	analy_result += '\n\n----\n';
 
 	console.log(data.topics);
-	analy_result += '\n##最热关键词文章：\n';
-	data.topics.map(function (topic) {
-		if (topic[2] <= topic[0].length) return;
-		analy_result += '\n###关键词：' + topic[1] + '　　热度：' + (Math.round(topic[2] * 100) / 100) + '\n';
-		analy_result += '\n|作者|文章|热度|\n';
-		analy_result += '|-|-|-|\n';
-		topic[0].map(function (article) {
-			analy_result += '|[' + article[2].author.name + '](' + article[2].author.url + ')|[《' + article[2].article.title + '》](/p/' + article[2].article.slug + ')|' + (Math.round(article[1] * 100) / 100) + '|\n';
+	if (SHOW_KEYWORD_CLUSTER) {
+		analy_result += '\n##最热关键词文章：\n';
+		data.topics.map(function (topic) {
+			if (topic[2] <= topic[0].length) return;
+			analy_result += '\n###关键词：' + topic[1] + '　　热度：' + (Math.round(topic[2] * 100) / 100) + '\n';
+			analy_result += '\n|作者|文章|热度|\n';
+			analy_result += '|-|-|-|\n';
+			topic[0].map(function (article) {
+				analy_result += '|[' + article[2].author.name + '](' + article[2].author.url + ')|[《' + article[2].article.title + '》](/p/' + article[2].article.slug + ')|' + (Math.round(article[1] * 100) / 100) + '|\n';
+			});
+			analy_result += '\n\n';
 		});
-		analy_result += '\n\n';
-	});
-	analy_result += '\n----\n';
+		analy_result += '\n----\n';
+	}
 
 	console.log(data.clusters);
-	analy_result += '\n##最热话题文单：\n';
-	data.clusters.map(function (cluster) {
-		if (cluster[2] <= cluster[0].length) return;
-		analy_result += '\n###话题：' + cluster[1].join('，') + '　　热度：' + (Math.round(cluster[2] * 100) / 100) + '\n';
-		analy_result += '\n|作者|文章|相关度|热度|\n';
-		analy_result += '|-|-|-|-|\n';
-		cluster[0].map(function (point) {
-			analy_result += '|[' + point.authorName + '](' + point.authorUrl + ')|[《' + point.title + '》](/p/' + point.slug + ')|' + (Math.round(point.relative * 100) / 100) + '|' + point.like + '|\n';
+	if (SHOW_TOPIC_CLUSTER) {
+		analy_result += '\n##最热话题文单：\n';
+		data.clusters.map(function (cluster) {
+			if (cluster[2] <= cluster[0].length) return;
+			analy_result += '\n###话题：' + cluster[1].join('，') + '　　热度：' + (Math.round(cluster[2] * 100) / 100) + '\n';
+			analy_result += '\n|作者|文章|相关度|热度|\n';
+			analy_result += '|-|-|-|-|\n';
+			cluster[0].map(function (point) {
+				analy_result += '|[' + point.authorName + '](' + point.authorUrl + ')|[《' + point.title + '》](/p/' + point.slug + ')|' + (Math.round(point.relative * 100) / 100) + '|' + point.like + '|\n';
+			});
+			analy_result += '\n\n';
 		});
-		analy_result += '\n\n';
-	});
-	analy_result += '\n----\n';
+		analy_result += '\n----\n';
+	}
 
 	md_result += analy_result;
 
