@@ -23,7 +23,7 @@ function statistics (from, to) {
 		var link = article.querySelector('h5 a');
 		var title = link.innerHTML;
 		if (!!title.match(/^[#《].+?([总小]结|好文推荐)$/)) return null;
-		title = title.replace(/\|/g, '｜');
+		title = title.replace(/\|/g, '｜').replace(/《/g, '〈').replace(/》/g, '〉');
 		var slug = link.getAttribute('href');
 		var comment = article.querySelector('.fa-comments-o');
 		var like = article.querySelector('.like-icon-button');
@@ -96,7 +96,7 @@ function loadAndStatic (list) {
 		var article = document.createElement('div'), temp;
 		article.innerHTML = text;
 		var content = getContent(article.querySelector('.show-content'));
-		var title = article.querySelector('h1').innerText.trim().replace(/\|/g, '｜');
+		var title = article.querySelector('h1').innerText.trim().replace(/\|/g, '｜').replace(/《/g, '〈').replace(/》/g, '〉');
 		temp = article.querySelector('.author-info .info-r>p>a');
 		var author = {
 			name : temp.innerText.replace(/\n/gi, '').trim(),
