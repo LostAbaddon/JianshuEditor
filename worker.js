@@ -462,6 +462,15 @@ function getCluster (data) {
 	keywords.sort(function (w1, w2) {
 		return w2.index - w1.index;
 	});
+	if (!keywords[0]) {
+		console.log('Data Is Not Enough!');
+		send("ClusterAnalyzeDone", {
+			keywords: [],
+			clusters: [],
+			topics: []
+		});
+		return;
+	}
 	structure_limit = keywords[0].index;
 	var kw_list = [], kw_power = [];
 	keywords.map(function (info) {

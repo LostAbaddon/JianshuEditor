@@ -54,6 +54,14 @@ function requestHandler (request, sender) {
 			analyzing = false;
 			shouldReport = false;
 			requestID = -1;
+			currentRecords = {};
+		break;
+		case "AppendArticleRecords":
+			appendArticleRecords(data);
+		break;
+		case "AnalyzeArticles":
+			data.records = currentRecords;
+			send(request.tabID, 'analyzeArticles', data);
 		break;
 		case "test":
 			console.log(request);
@@ -69,7 +77,7 @@ function requestHandler (request, sender) {
 	}
 }
 
-var kwTasks = {}, taskList = [], analyzing = false, shouldReport = false, requestID = -1;
+var kwTasks = {}, taskList = [], analyzing = false, shouldReport = false, requestID = -1, currentRecords = {};
 function addTask (data) {
 	shouldReport = false;
 	kwTasks[data.slug] = {
@@ -170,6 +178,11 @@ function reportFinalReport (result) {
 	});
 	// console.log(result);
 	send(requestID, 'GotAnalyzeReport', result);
+}
+function appendArticleRecords (articles) {
+	articles.map(function (info) {
+		currentRecords[info.slug] = info; // Use new data to overwrite older one.
+	});
 }
 
 var doesCurrentSend = {};

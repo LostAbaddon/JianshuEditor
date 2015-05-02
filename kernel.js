@@ -11,7 +11,7 @@ function getCollectionID () {
 	return window.location.pathname.replace(/^\/collection\//, '');
 }
 
-function statistics (from, to) {
+function statistics (from, to, records) {
 	show('Start Statistics');
 	start_time = new Date().getTime();
 
@@ -72,7 +72,7 @@ function statistics (from, to) {
 
 	setTimeout(function () {
 		console.log('Start Page-Loading and Analyzing...');
-		loadAndStatic(list);
+		loadAndStatic(list, records);
 	}, 0);
 	return true;
 }
@@ -86,7 +86,7 @@ function getWilsonIndex (total, number) {
 	if (number < 0) return 0;
 	if (number > total) number = total;
 	// total = Math.log(total / AVE_READ + 1);
-	number = Math.log(number / AVE_ACT + 1) * AVE_READ;
+	number = Math.log(number / AVE_ACT + 1) * AVE_READ; // 去除累进优势 //
 	var rate = number / total;
 	var inverse = 1 / total;
 	var result = rate + 2 / 3 * (1 - 2 * rate) * inverse - Math.sqrt(2 * rate * (1 - rate) * inverse);
@@ -94,8 +94,8 @@ function getWilsonIndex (total, number) {
 	return result;
 }
 
-function loadAndStatic (list) {
-	var total = list.length, articles = [];
+function loadAndStatic (list, records) {
+	var total = list.length, articles = [], loaded = {};
 	function readPage (text, like, comment) {
 		text = text.replace(/<!DOCTYPE .*?>\n*/gi, '');
 		text = text.replace(/<\/?(html|body).*?>\n*/gi, '');
@@ -144,6 +144,7 @@ function loadAndStatic (list) {
 					result.likePerKWord = getWilsonIndex(result.word, result.like) * 1000;
 					result.commentPerKWord = getWilsonIndex(result.word, result.comment) * 1000;
 					articles.push(result);
+					loaded[result.slug] = true;
 					send('AnalyzeKeyWord', {
 						slug: slug,
 						content: result.content,
@@ -161,6 +162,12 @@ function loadAndStatic (list) {
 				always: function () {
 					show('完成度：' + index + '/' + total);
 					if (index === total) {
+						// Combine the saved records //
+						Object.keys(records).map(function (slug) {
+							if (!loaded[slug]) {
+								articles.push(records[slug]);
+							}
+						});
 						analyzeArticles(articles);
 					}
 				}
@@ -174,6 +181,10 @@ function loadAndStatic (list) {
 const SHOW_MENTIONED_AUTHORS = true;
 function createArticleReport (articles) {
 	show('分析中...');
+
+	// 将数据保存到Servo端 //
+	sendToServoAndSave(articles);
+
 	var results = '#卷首语\n\n----\n\n';
 	results += '#上周活动数据统计\n';
 
@@ -495,7 +506,7 @@ function createArticleReport (articles) {
 		},
 		'均点赞榜',
 		{
-			showItem: true,
+			showItem: false,
 			calculate: round,
 			extras: [{
 				title: '',
@@ -520,7 +531,7 @@ function createArticleReport (articles) {
 		},
 		'均评论榜',
 		{
-			showItem: true,
+			showItem: false,
 			calculate: round,
 			extras: [{
 				title: '',
@@ -536,10 +547,10 @@ function createArticleReport (articles) {
 	results += ">　　这两份分别是总评论榜与均评论榜。\n";
 	// Read Most
 	arrangeArticle('read', {pro: '共有', post: '人次阅读', title: '阅读量'}, '阅读榜');
-	results += ">　　\n";
+	results += ">　　传播就是王道！\n";
 	// Word Most
 	arrangeArticle('word', {pro: '共有', post: '字', title: '字数'}, '字数榜');
-	results += ">　　\n";
+	results += ">　　个人一直相信，能坚持写出长文的，必然也是有一定质量保证的！\n";
 
 	results += '\n----\n';
 
@@ -557,7 +568,7 @@ function createArticleReport (articles) {
 		},
 		'均点赞榜',
 		{
-			showItem: true,
+			showItem: false,
 			calculate: round,
 			extras: [{
 				title: '',
@@ -570,7 +581,6 @@ function createArticleReport (articles) {
 			}]
 		}
 	);
-	results += ">　　这两份分别是总点赞榜与均点赞榜。\n";
 	// Comment Most
 	arrangeAuthor('comment', {pro: '共引发', post: '条评论', title: '评论数'}, '总评论榜');
 	// CR Most
@@ -582,7 +592,7 @@ function createArticleReport (articles) {
 		},
 		'均评论榜',
 		{
-			showItem: true,
+			showItem: false,
 			calculate: round,
 			extras: [{
 				title: '',
@@ -595,16 +605,15 @@ function createArticleReport (articles) {
 			}]
 		}
 	);
-	results += ">　　\n";
+	results += ">　　这四份榜单上的作者，每一位都可以独当一面哦！\n";
 	// Read Most
 	arrangeAuthor('read', {pro: '共有', post: '人次阅读', title: '阅读量'}, '阅读榜');
-	results += ">　　\n";
+	results += ">　　传播即王道！大家向这些王者致敬！\n";
 	// Article Most
 	arrangeAuthor(['articles', 'length'], {pro: '共写了', post: '篇文章', title: '文章数'}, '总发文榜');
-	results += ">　　\n";
 	// Word Most
 	arrangeAuthor('word', {pro: '共写了', post: '字', title: '字数'}, '总码字榜');
-	results += ">　　\n";
+	results += ">　　这两张榜单上的作者们都幸苦啦！\n";
 
 	results += '\n----\n';
 
@@ -657,6 +666,10 @@ function analyzeArticles (articles) {
 	analyzeTrend(articles, authorInfo);
 	send('GetKeyWordReport');
 	show('<p>分析耗时: ' + (start_time / 1000) + '秒</p>');
+}
+
+function sendToServoAndSave (articles) {
+	send("AppendArticleRecords", articles);
 }
 
 function analyzeTrend (articles, authors) {
@@ -831,7 +844,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 			console.log('Analyze: ', msg);
 			sendResponse({
 				origin: request.action,
-				success: statistics(msg.articleFrom, msg.articleTo),
+				success: statistics(msg.articleFrom, msg.articleTo, msg.records),
 				needRecall: false,
 				msg: 'Job Done.'
 			});
