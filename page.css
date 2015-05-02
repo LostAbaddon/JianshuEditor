@@ -48,9 +48,22 @@
 }
 ._extension_pad table tr {
 	margin-bottom: 1px;
+	background-color: rgb(255, 255, 255);
+	border-bottom: 1px solid rgb(200, 200, 200);
+}
+._extension_pad table tr:last-child {
+	border-bottom: none;
+}
+._extension_pad table tr:nth-child(4n-1) {
+	background-color: rgb(255, 240, 240);
+}
+._extension_pad table tr:nth-child(4n-2) {
+	background-color: rgb(240, 255, 240);
+}
+._extension_pad table tr:nth-child(4n-3) {
+	background-color: rgb(240, 240, 255);
 }
 ._extension_pad table td {
-	background-color: rgb(255, 255, 255);
 	padding: 5px;
 	padding-left: 10px;
 	padding-right: 10px;
