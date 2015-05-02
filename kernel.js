@@ -31,7 +31,7 @@ function statistics (from, to) {
 		}
 		var comment = article.querySelector('.fa-comments-o');
 		var like = article.querySelector('.like-icon-button');
-		console.log(title, from, title === from, to, title === to);
+		// console.log(title, from, title === from, to, title === to);
 		if (title === from || slug === from) indexFrom = i;
 		if (title === to || slug === to) indexTo = i;
 		if (comment) {
@@ -77,13 +77,17 @@ function statistics (from, to) {
 	return true;
 }
 
+const AVE_READ = 200;
+const AVE_ACT = 10;
 function getWilsonIndex (total, number) {
 	total -= 10;
 	if (total < 1) total = 1;
 	number -= 5;
 	if (number < 0) return 0;
 	if (number > total) number = total;
-	var rate = number/ total;
+	// total = Math.log(total / AVE_READ + 1);
+	number = Math.log(number / AVE_ACT + 1) * AVE_READ;
+	var rate = number / total;
 	var inverse = 1 / total;
 	var result = rate + 2 / 3 * (1 - 2 * rate) * inverse - Math.sqrt(2 * rate * (1 - rate) * inverse);
 	if (result > rate) result = rate;
@@ -355,8 +359,14 @@ function createArticleReport (articles) {
 	function round (v) {
 		result = Math.round(v * 100) / 100;
 		result = '' + result;
-		if (result.length < 4) result = result + '0';
-		else if (result.length > 4) result = result.substring(0, 4);
+		if (result.indexOf('.') >= 0) {
+			while (result.length < 4) result = result + '0';
+			if (result.length > 4) result = result.substring(0, 4);
+		}
+		else {
+			result = result + '.';
+			while (result.length < 4) result = result + '0';
+		}
 		return result;
 	}
 
