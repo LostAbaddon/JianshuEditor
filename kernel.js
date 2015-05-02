@@ -23,13 +23,17 @@ function statistics (from, to) {
 		var link = article.querySelector('h5 a');
 		var title = link.innerHTML;
 		if (!!title.match(/^[#《].+?([总小]结|好文推荐)$/)) return null;
-		title = title.replace(/\|/g, '｜').replace(/《/g, '〈').replace(/》/g, '〉');
+		title = title.toLowerCase().trim();
 		var slug = link.getAttribute('href');
+		if (slug) {
+			slug = slug.replace('/p/', '');
+			slug = slug.toLowerCase().trim();
+		}
 		var comment = article.querySelector('.fa-comments-o');
 		var like = article.querySelector('.like-icon-button');
-		if (slug) slug = slug.replace('/p/', '');
-		if (title.toLowerCase().trim() === from || slug.toLowerCase().trim() === from) indexFrom = i;
-		if (title.toLowerCase().trim() === to || slug.toLowerCase().trim() === to) indexTo = i;
+		console.log(title, from, title === from, to, title === to);
+		if (title === from || slug === from) indexFrom = i;
+		if (title === to || slug === to) indexTo = i;
 		if (comment) {
 			comment = comment.parentElement.innerText.trim() * 1;
 		}
@@ -349,10 +353,14 @@ function createArticleReport (articles) {
 
 	// GetLists
 	function round (v) {
-		return Math.round(v * 100) / 100;
+		result = Math.round(v * 100) / 100;
+		result = '' + result;
+		if (result.length < 4) result = result + '0';
+		else if (result.length > 4) result = result.substring(0, 4);
+		return result;
 	}
 
-	var ALR = 8, ALK = 6, ACR = 5, ACM = 4;
+	var ALR = 10, ALK = 8, ACR = 5, ACM = 3;
 
 	// Recommendation Index
 	num = articles.length;
