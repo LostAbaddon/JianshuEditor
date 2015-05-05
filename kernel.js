@@ -179,6 +179,7 @@ function loadAndStatic (list, records) {
 }
 
 const SHOW_MENTIONED_AUTHORS = true;
+const HOST_URL = 'http://www.jianshu.com';
 function createArticleReport (articles) {
 	show('分析中...');
 
@@ -247,15 +248,15 @@ function createArticleReport (articles) {
 			if (num > 0) {
 				if (mentions.indexOf(article.author) === -1) mentions.push(article.author);
 				if (num + MAX2 > MAX && mentions2.indexOf(article.author) === -1) mentions2.push(article.author);
-				// results += '\n1. [' + article.author + '](' + article.authorURL + ')的[《' + article.title + '》](' + article.url + ')　　' + words.pro + value + words.post + extras;
+				// results += '\n1. [' + article.author + '](' + HOST_URL + article.authorURL + ')的[《' + article.title + '》](' + HOST_URL + article.url + ')　　' + words.pro + value + words.post + extras;
 				if (options && options.hideData) {
-					results += '\n|' + table_index + '|[' + article.author + '](' + article.authorURL + ')|[《' + article.title + '》](' + article.url + ')|';
+					results += '\n|' + table_index + '|[' + article.author + '](' + HOST_URL + article.authorURL + ')|[《' + article.title + '》](' + HOST_URL + article.url + ')|';
 				}
 				else if (options && options.showItem === false) {
-					results += '\n|' + table_index + '|[' + article.author + '](' + article.authorURL + ')|[《' + article.title + '》](' + article.url + ')|' + extras + '|';
+					results += '\n|' + table_index + '|[' + article.author + '](' + HOST_URL + article.authorURL + ')|[《' + article.title + '》](' + HOST_URL + article.url + ')|' + extras + '|';
 				}
 				else {
-					results += '\n|' + table_index + '|[' + article.author + '](' + article.authorURL + ')|[《' + article.title + '》](' + article.url + ')|' + value + (extras.length > 0 ? '　｜　' : '') + extras + '|';
+					results += '\n|' + table_index + '|[' + article.author + '](' + HOST_URL + article.authorURL + ')|[《' + article.title + '》](' + HOST_URL + article.url + ')|' + value + (extras.length > 0 ? '　｜　' : '') + extras + '|';
 				}
 				table_index++;
 			}
@@ -323,15 +324,15 @@ function createArticleReport (articles) {
 			if (num > 0) {
 				if (mentions.indexOf(author) === -1) mentions.push(author);
 				if (num + MAX2 > MAX && mentions2.indexOf(author) === -1) mentions2.push(author);
-				// results += '\n1. [' + author + '](' + info.url + ')　　' + words.pro + value + words.post + extras;
+				// results += '\n1. [' + author + '](' + HOST_URL + info.url + ')　　' + words.pro + value + words.post + extras;
 				if (options && options.hideData) {
-					results += '\n|' + table_index + '|[' + author + '](' + info.url + ')|';
+					results += '\n|' + table_index + '|[' + author + '](' + HOST_URL + info.url + ')|';
 				}
 				else if (options && options.showItem === false) {
-					results += '\n|' + table_index + '|[' + author + '](' + info.url + ')|' + extras + '|';
+					results += '\n|' + table_index + '|[' + author + '](' + HOST_URL + info.url + ')|' + extras + '|';
 				}
 				else {
-					results += '\n|' + table_index + '|[' + author + '](' + info.url + ')|' + value + (extras.length > 0 ? '　｜　' : '') + extras + '|';
+					results += '\n|' + table_index + '|[' + author + '](' + HOST_URL + info.url + ')|' + value + (extras.length > 0 ? '　｜　' : '') + extras + '|';
 				}
 			}
 			table_index++;
@@ -361,7 +362,7 @@ function createArticleReport (articles) {
 		}
 	});
 	results += '\n##整体情况：\n';
-	results += '\n　　本次活动统计从[' + articles[articles.length - 1].author + '](' + articles[articles.length - 1].authorURL + ')的[《' + articles[articles.length - 1].title + '》](' + articles[articles.length - 1].url + ')到[' + articles[0].author + '](' + articles[0].authorURL + ')的[《' + articles[0].title + '》](' + articles[0].url + ')，总共收到了来自' + authors.length + '位作者的' + total + '篇文章，共计' + wordages + '字。';
+	results += '\n　　本次活动统计从[' + articles[articles.length - 1].author + '](' + HOST_URL + articles[articles.length - 1].authorURL + ')的[《' + articles[articles.length - 1].title + '》](' + HOST_URL + articles[articles.length - 1].url + ')到[' + articles[0].author + '](' + HOST_URL + articles[0].authorURL + ')的[《' + articles[0].title + '》](' + HOST_URL + articles[0].url + ')，总共收到了来自' + authors.length + '位作者的' + total + '篇文章，共计' + wordages + '字。';
 	results += '\n　　共有' + readers + '人次阅读，收获了' + likes + '个赞，引发了' + comments + '条讨论。';
 	results += '\n\n>　　\n';
 	results += '\n----\n'
@@ -738,7 +739,7 @@ function getAnalyzeReport (data) {
 			analy_result += '\n|作者|文章|热度|\n';
 			analy_result += '|-|-|-|\n';
 			topic[0].map(function (article) {
-				analy_result += '|[' + article[2].author.name + '](' + article[2].author.url + ')|[《' + article[2].article.title + '》](/p/' + article[2].article.slug + ')|' + (Math.round(article[1] * 100) / 100) + '|\n';
+				analy_result += '|[' + article[2].author.name + '](' + HOST_URL + article[2].author.url + ')|[《' + article[2].article.title + '》](' + HOST_URL + '/p/' + article[2].article.slug + ')|' + (Math.round(article[1] * 100) / 100) + '|\n';
 			});
 			analy_result += '\n\n';
 		});
@@ -754,7 +755,7 @@ function getAnalyzeReport (data) {
 			analy_result += '\n|作者|文章|相关度|热度|\n';
 			analy_result += '|-|-|-|-|\n';
 			cluster[0].map(function (point) {
-				analy_result += '|[' + point.authorName + '](' + point.authorUrl + ')|[《' + point.title + '》](/p/' + point.slug + ')|' + (Math.round(point.relative * 100) / 100) + '|' + point.like + '|\n';
+				analy_result += '|[' + point.authorName + '](' + point.authorUrl + ')|[《' + point.title + '》](' + HOST_URL + '/p/' + point.slug + ')|' + (Math.round(point.relative * 100) / 100) + '|' + point.like + '|\n';
 			});
 			analy_result += '\n\n';
 		});
