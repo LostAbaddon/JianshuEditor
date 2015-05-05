@@ -186,8 +186,8 @@ function createArticleReport (articles) {
 	// 将数据保存到Servo端 //
 	sendToServoAndSave(articles);
 
-	var results = '#卷首语\n\n----\n\n';
-	results += '#上周活动数据统计\n';
+	var results = '#卷首语\n\n　　大家好，我是简书总结者，[LostAbaddon](http://www.jianshu.com/users/sbLy2t)。\n\n----\n\n';
+	results += '#上周活动数据统计\n\n　　**一如既往，本活动的统计将剔除四大刷赞文——干货文，工具文，单列文，鸡汤文（含成功学）。**\n\n';
 
 	var num, MAX = 10, MAX2 = 10, mentions = [], mentions2 = [];
 	function arrangeArticle (itemName, words, title, options) {
