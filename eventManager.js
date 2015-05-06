@@ -1,16 +1,18 @@
 /*
-* @Author: LostAbaddon
-* @Date:   2015-05-06 10:19:27
-* @Last Modified by:   LostAbaddon
-* @Last Modified time: 2015-05-06 12:05:26
-*/
+ * @ModuleName: EventManager
+ * @Author: LostAbaddon
+ * @Date:   2015-05-06 10:19:27
+ * @Last Modified by:   LostAbaddon
+ * @Last Modified time: 2015-05-06 12:14:40
+ */
 
 (function () {
 	var root = null;
 	(function init () {
 		// For Node.js
 		if (typeof module !== 'undefined' && typeof exports === 'object') {
-			root = module.exports;
+			if (!global.jLAss) global.jLAss = {};
+			root = global.jLAss;
 		}
 		// For WebWorker
 		else if (typeof importScripts !== 'undefined') {
