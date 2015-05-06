@@ -783,6 +783,7 @@ function showResult () {
 }
 
 function showArticleFilter () {
+	if (!article_records) return;
 	article_records.sort(function (noteA, noteB) {
 		var index = noteB._select - noteA._select;
 		if (index === 0) index = noteA._index - noteB._index;
@@ -795,13 +796,50 @@ function showArticleFilter () {
 	article_records.map(function (info) {
 		insertLineForAF(info, table);
 	});
-	article_filter.innerHTML += '<div style="text-align:center;margin-top:50px;"><button target="Submit">提交</button></div>';
+	article_filter.innerHTML += '<div style="text-align:center;margin-top:50px;"><button target="SubmitArticleFilter">提交</button></div>';
+}
+function showAuthorFilter () {
+	if (!article_records) return;
+	var authors = {};
+	article_records.map(function (note) {
+		var slug = note.authorURL;
+		if (authors[slug]) {
+			authors[slug].article ++;
+		}
+		else {
+			authors[slug] = {
+				name: note.author,
+				url: slug,
+				article: 1
+			};
+		}
+	});
+	authors = Object.keys(authors).map(function (slug) {
+		return authors[slug];
+	}).sort(function (authorA, authorB) {
+		return authorB.article - authorA.article
+	});
+
+	openElement(article_filter);
+	article_filter.innerHTML = '<table style="width:95%;min-width:500px;"><thead><tr><th>作者</th><th>文章</th><th>操作</th></tr></thead><tbody></tbody></table>';
+	var table = article_filter.querySelector('tbody');
+	authors.map(function (info) {
+		insertLineForBF(info, table);
+	});
+	article_filter.innerHTML += '<div style="text-align:center;margin-top:50px;"><button target="SubmitArticleFilter">提交</button></div>';
 }
 function insertLineForAF (info, table) {
 	var record = newElement('tr');
 	record.innerHTML = '<td><a href="http://www.jianshu.com/' + info.authorURL + '" target="_blank">' + info.author + '</a></td>';
 	record.innerHTML += '<td><a href="http://www.jianshu.com/' + info.url + '" target="_blank">' + info.title + '</a></td>';
 	record.innerHTML += '<td style="text-align:center;"><button target="RemoveArticle" name="' + info.slug + '">移除</button></td>';
+	table.appendChild(record);
+}
+function insertLineForBF (info, table) {
+	var record = newElement('tr');
+	record.innerHTML = '<td><a href="http://www.jianshu.com/' + info.url + '" target="_blank">' + info.name + '</a></td>';
+	record.innerHTML += '<td>' + info.article + '</td>';
+	record.innerHTML += '<td style="text-align:center;"><button target="RemoveAuthor" name="' + info.url + '">移除</button></td>';
 	table.appendChild(record);
 }
 function onArticleFilterEvent (event) {
@@ -818,7 +856,14 @@ function onArticleFilterEvent (event) {
 		}
 		host.parentElement.parentElement.parentElement.removeChild(host.parentElement.parentElement);
 	}
-	else if (task === 'Submit') {
+	else if (task === 'RemoveAuthor') {
+		target = host.getAttribute('name');
+		article_records = article_records.filter(function (info) {
+			return info.authorURL !== target;
+		});
+		host.parentElement.parentElement.parentElement.removeChild(host.parentElement.parentElement);
+	}
+	else if (task === 'SubmitArticleFilter') {
 		closeElement(article_filter);
 		target = createArticleReport(article_records);
 		show('<p>分析已完成</p>');
@@ -861,6 +906,9 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 		break;
 		case "filterArticle":
 			showArticleFilter();
+		break;
+		case "filterAuthor":
+			showAuthorFilter();
 		break;
 		case "filterKeyword":
 			console.log('Request For Keyword Filter');
