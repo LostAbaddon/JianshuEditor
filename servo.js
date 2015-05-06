@@ -238,12 +238,12 @@ function deleteDatabase (dbName) {
 
 // Not-Keyword DB
 const dtNotKeyword = 'NotKeyword';
-// const FORBIDDEN_WORDS = ['自己', '我们', '你们', '他们', '什么', '为什么', '的时候', '就是', '一个', '知道', '但是', '可是', '因为', '所以', '没有', '怎么', '可以', '然后', '现在', '事情', '的东西', '东西', '的事情', '可能', '不可能', '比如', '如果', '开始', '有些', '已经', '时候', '其实', '这样的', '这样', '那样', '那样的', '还是', '的时候', '还是', '自己的', '知道', '不知道', '当然', '或者', '仅仅是', '仅仅', '的生活', '那个时候', '这本书', '只是', '一直', '图片来自网络', '说道', '摇了摇头', '的地方', '它们', '的样子', '让我', '突然', '忽然', '了起来', '是一样的', '但我', '越来越', '不过是', '只是', '的味道', '是一样的', '的母亲', '日星期', '而且', '以及', '结果', '觉得', '发现', '需要', '告诉', '感觉', '于是', '我觉得', '篇文章', '图片来自', '的姑娘', '这些', '这个时候', '的故事', '应该', '对于', '大概是', '认为', '比较', '这个问题', '当时', '这种', '那种', '如果你', '如何', '那么', '图片来自Instagram', '的内容', '的声音', '必须', '很多', '并且', '是那么的', '这一天', '我们这里', '别人的', '每个人', '哈哈哈', 'com', '那些', '真的', '可以看出', '特别', '一起', '个故事', '因為', '了一辈子'];
-const FORBIDDEN_WORDS = ['自己', '我们'];
+const FORBIDDEN_WORDS = ['自己', '我们', '你们', '他们', '什么', '为什么', '的时候', '就是', '一个', '知道', '但是', '可是', '因为', '所以', '没有', '怎么', '可以', '然后', '现在', '事情', '的东西', '东西', '的事情', '可能', '不可能', '比如', '如果', '开始', '有些', '已经', '时候', '其实', '这样的', '这样', '那样', '那样的', '还是', '自己的', '不知道', '当然', '或者', '仅仅是', '仅仅', '的生活', '那个时候', '这本书', '一直', '图片来自网络', '说道', '摇了摇头', '的地方', '它们', '的样子', '让我', '突然', '忽然', '了起来', '但我', '越来越', '不过是', '只是', '的味道', '是一样的', '的母亲', '日星期', '而且', '以及', '结果', '觉得', '发现', '需要', '告诉', '感觉', '于是', '我觉得', '篇文章', '图片来自', '的姑娘', '这些', '这个时候', '的故事', '应该', '对于', '大概是', '认为', '比较', '这个问题', '当时', '这种', '那种', '如果你', '如何', '那么', '图片来自Instagram', '的内容', '的声音', '必须', '很多', '并且', '是那么的', '这一天', '我们这里', '别人的', '每个人', '哈哈哈', 'com', '那些', '真的', '可以看出', '特别', '一起', '个故事', '因為', '了一辈子'];
+
 function initNotKeywordDB (db) {
 	console.log(db);
 	var store = db.createObjectStore(dtNotKeyword, {keyPath: 'word'});
-	store.createIndex('level', 'level', {unique: false});
+	store.createIndex('word', 'word', {unique: false});
 	store.transaction.oncomplete = function (event) {
 		var store = db.transaction(dtNotKeyword, 'readwrite').objectStore(dtNotKeyword);
 		var request;
@@ -251,20 +251,10 @@ function initNotKeywordDB (db) {
 			item = FORBIDDEN_WORDS[item];
 			item = {
 				word: item,
-				level: 0
+				active: true
 			};
-			console.log(item);
-			request = store.add(item);
-			request.onsuccess = function (event) {
-				console.log('DONE');
-				console.log(event);
-			};
-			request.onerror = function (event) {
-				console.log('ERROR');
-				console.log(event);
-			};
+			store.add(item);
 		}
-		console.log(store);
 	};
 }
 
