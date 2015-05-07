@@ -213,7 +213,8 @@ function createDatabase (dbName, dbVersion) {
 	request.onsuccess = function (event) {
 		var db = event.target.result;
 		jsdb.datebase = db;
-		console.log(db);
+
+		initNotKeywordList();
 	};
 	request.onupgradeneeded = function (event) {
 		var db = event.target.result;
@@ -240,28 +241,203 @@ function deleteDatabase (dbName) {
 const dtNotKeyword = 'NotKeyword';
 const FORBIDDEN_WORDS = ['自己', '我们', '你们', '他们', '什么', '为什么', '的时候', '就是', '一个', '知道', '但是', '可是', '因为', '所以', '没有', '怎么', '可以', '然后', '现在', '事情', '的东西', '东西', '的事情', '可能', '不可能', '比如', '如果', '开始', '有些', '已经', '时候', '其实', '这样的', '这样', '那样', '那样的', '还是', '自己的', '不知道', '当然', '或者', '仅仅是', '仅仅', '的生活', '那个时候', '这本书', '一直', '图片来自网络', '说道', '摇了摇头', '的地方', '它们', '的样子', '让我', '突然', '忽然', '了起来', '但我', '越来越', '不过是', '只是', '的味道', '是一样的', '的母亲', '日星期', '而且', '以及', '结果', '觉得', '发现', '需要', '告诉', '感觉', '于是', '我觉得', '篇文章', '图片来自', '的姑娘', '这些', '这个时候', '的故事', '应该', '对于', '大概是', '认为', '比较', '这个问题', '当时', '这种', '那种', '如果你', '如何', '那么', '图片来自Instagram', '的内容', '的声音', '必须', '很多', '并且', '是那么的', '这一天', '我们这里', '别人的', '每个人', '哈哈哈', 'com', '那些', '真的', '可以看出', '特别', '一起', '个故事', '因為', '了一辈子'];
 
+var listNKW = [];
 function initNotKeywordDB (db) {
-	console.log(db);
 	var store = db.createObjectStore(dtNotKeyword, {keyPath: 'word'});
-	store.createIndex('word', 'word', {unique: false});
-	store.transaction.oncomplete = function (event) {
-		var store = db.transaction(dtNotKeyword, 'readwrite').objectStore(dtNotKeyword);
-		var request;
-		for (item in FORBIDDEN_WORDS) {
-			item = FORBIDDEN_WORDS[item];
-			item = {
-				word: item,
-				active: true
-			};
-			store.add(item);
+	for (item in FORBIDDEN_WORDS) {
+		item = FORBIDDEN_WORDS[item];
+		item = {
+			word: item,
+			active: true
+		};
+		store.add(item);
+	}
+}
+function initNotKeywordList () {
+	refreshNotKeyWordList(
+		function (result) {
+			console.log(result);
+			addNotKeyword('我们',
+				function (value) {
+					console.log('Add Record');
+					getAllNotKeywordList(function (list) {
+						console.log(list.join(', '));
+						addNotKeyword('我们a',
+							function (value) {
+								console.log('Add Record');
+								getAllNotKeywordList(function (list) {
+									console.log(list.join(', '));
+									removeNotKeyword('了一辈子', function () {
+										console.log('Remove Record');
+										getAllNotKeywordList(function (list) {
+											console.log(list.join(', '));
+											razeNotKeyword('的时候', function () {
+												console.log('Raze Record');
+												getAllNotKeywordList(function (list) {
+													console.log(list.join(', '));
+												});
+											})
+										});
+									})
+								});
+							},
+							function (error) {
+								console.log('On Error:');
+								console.log(error);
+							}
+						);
+					});
+				},
+				function (error) {
+					console.log('On Error:');
+					console.log(error);
+				}
+			);
+		},
+		function (error) {
+			console.log(error);
+		}
+	);
+}
+function refreshNotKeyWordList (callback, callback_error) {
+	listNKW = [];
+	var store = jsdb.datebase.transaction(dtNotKeyword).objectStore(dtNotKeyword);
+	var request = store.openCursor();
+	request.onsuccess = function (event) {
+		var cursor = event.target.result;
+		if (cursor) {
+			if (cursor.value.active) listNKW.push(cursor.value.word);
+			cursor.continue();
+		}
+		else {
+			callback(listNKW);
 		}
 	};
+	request.onerror = function (event) {
+		callback_error(event.target.error);
+	};
+}
+function getAllNotKeywordList (callback, callback_error) {
+	var store = jsdb.datebase.transaction(dtNotKeyword).objectStore(dtNotKeyword);
+	var result = [];
+	var request = store.openCursor()
+	request.onsuccess = function (event) {
+		var cursor = event.target.result;
+		if (cursor) {
+			result.push([cursor.value.word, cursor.value.active]);
+			cursor.continue();
+		}
+		else {
+			callback(result);
+		}
+	};
+	request.onerror = function (event) {
+		callback_error(event.target.error);
+	};
+}
+function queryNotKeyword (word, callback_found, callback_not_found, callback_error) {
+	var store = jsdb.datebase.transaction(dtNotKeyword).objectStore(dtNotKeyword);
+	var request = store.get(word);
+	request.onsuccess = function (event) {
+		var value = event.target.result;
+		if (value) {
+			callback_found(value, store);
+		}
+		else {
+			callback_not_found(store);
+		}
+	};
+	request.onerror = function (event) {
+		callback_error(event.target.error);
+	};
+}
+function addNotKeyword (word, callback, callback_error) {
+	queryNotKeyword(word,
+		function (old_value) {
+			var store = jsdb.datebase.transaction(dtNotKeyword, 'readwrite').objectStore(dtNotKeyword);
+			var request = store.put({
+				word: word,
+				active: true
+			});
+			request.onsuccess = function (event) {
+				callback(event.target.result, store);
+			};
+			request.onerror = function (event) {
+				callback_error(event.target.error);
+			};
+		},
+		function () {
+			var store = jsdb.datebase.transaction(dtNotKeyword, 'readwrite').objectStore(dtNotKeyword);
+			var request = store.add({
+				word: word,
+				active: true
+			});
+			request.onsuccess = function (event) {
+				callback(event.target.result, store);
+			};
+			request.onerror = function (event) {
+				callback_error(event.target.error);
+			};
+		},
+		function (error) {
+			callback_error(error);
+		}
+	);
+}
+function removeNotKeyword (word, callback, callback_error) {
+	queryNotKeyword(word,
+		function (old_value) {
+			var store = jsdb.datebase.transaction(dtNotKeyword, 'readwrite').objectStore(dtNotKeyword);
+			var request = store.put({
+				word: word,
+				active: false
+			});
+			request.onsuccess = function (event) {
+				callback(store);
+			};
+			request.onerror = function (event) {
+				callback_error(event.target.error);
+			};
+		},
+		function () {
+			callback_error({
+				name: 'Record Not Found',
+				message: 'notKeyword ' + word + ' Not Found in Database!'
+			});
+		},
+		function (error) {
+			callback_error(error);
+		}
+	);
+}
+function razeNotKeyword (word, callback, callback_error) {
+	queryNotKeyword(word,
+		function (old_value) {
+			var store = jsdb.datebase.transaction(dtNotKeyword, 'readwrite').objectStore(dtNotKeyword);
+			var request = store.delete(word);
+			request.onsuccess = function (event) {
+				callback(store);
+			};
+			request.onerror = function (event) {
+				callback_error(event.target.error);
+			};
+		},
+		function () {
+			callback_error({
+				name: 'Record Not Found',
+				message: 'notKeyword ' + word + ' Not Found in Database!'
+			});
+		},
+		function (error) {
+			callback_error(error);
+		}
+	);
 }
 
 // DB Init
 
 function initDB () {
-	// deleteDatabase(DB_NAME);
+	deleteDatabase(DB_NAME);
 	createDatabase(DB_NAME, jsdb.version);
 }
 
