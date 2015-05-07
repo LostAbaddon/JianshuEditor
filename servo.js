@@ -256,46 +256,16 @@ function initNotKeywordDB (db) {
 function initNotKeywordList () {
 	refreshNotKeyWordList(
 		function (result) {
-			console.log(result);
-			addNotKeyword('我们',
-				function (value) {
-					console.log('Add Record');
-					getAllNotKeywordList(function (list) {
-						console.log(list.join(', '));
-						addNotKeyword('我们a',
-							function (value) {
-								console.log('Add Record');
-								getAllNotKeywordList(function (list) {
-									console.log(list.join(', '));
-									removeNotKeyword('了一辈子', function () {
-										console.log('Remove Record');
-										getAllNotKeywordList(function (list) {
-											console.log(list.join(', '));
-											razeNotKeyword('的时候', function () {
-												console.log('Raze Record');
-												getAllNotKeywordList(function (list) {
-													console.log(list.join(', '));
-												});
-											})
-										});
-									})
-								});
-							},
-							function (error) {
-								console.log('On Error:');
-								console.log(error);
-							}
-						);
-					});
-				},
-				function (error) {
-					console.log('On Error:');
-					console.log(error);
-				}
-			);
+			worker.postMessage({
+				action: 'updateNotKeywordDB',
+				data: result
+			});
 		},
 		function (error) {
-			console.log(error);
+			worker.postMessage({
+				action: 'updateNotKeywordDB',
+				data: FORBIDDEN_WORDS
+			});
 		}
 	);
 }
