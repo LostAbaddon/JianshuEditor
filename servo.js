@@ -255,13 +255,13 @@ function initNotKeywordDB (db) {
 }
 function initNotKeywordList () {
 	refreshNotKeyWordList(
-		function (result) {
+		function () {
 			worker.postMessage({
 				action: 'updateNotKeywordDB',
-				data: result
+				data: listNKW
 			});
 		},
-		function (error) {
+		function () {
 			worker.postMessage({
 				action: 'updateNotKeywordDB',
 				data: FORBIDDEN_WORDS
@@ -407,7 +407,7 @@ function razeNotKeyword (word, callback, callback_error) {
 // DB Init
 
 function initDB () {
-	deleteDatabase(DB_NAME);
+	// deleteDatabase(DB_NAME);
 	createDatabase(DB_NAME, jsdb.version);
 }
 
