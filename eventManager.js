@@ -26,6 +26,9 @@
 		}
 	}) ();
 
+	// Requirement
+	if (!root.addModule) return;
+
 	var EventObject = function (name, target, eventManager) {
 		this.name = name;
 		this.target = target;
@@ -175,6 +178,10 @@
 		return eventB[1] - eventA[1];
 	}
 
+	// Module Info
+	EventManager.ModuleName = 'EventManager';
+	EventManager.ModuleVersion = 1;
+
 	// Exports
-	root.EventManager = EventManager;
+	root.addModule(EventManager);
 }) ();

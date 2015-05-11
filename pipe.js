@@ -27,6 +27,7 @@
 	}) ();
 
 	// Requirement
+	if (!root.addModule) return;
 	if (!root.EventManager) return;
 
 	var TaskRing = function (pipe, currentIndex) {
@@ -123,6 +124,10 @@
 		this.index = -1;
 	};
 
+	// Module Info
+	Pipe.ModuleName = 'Pipe';
+	Pipe.ModuleVersion = 1;
+
 	// Exports
-	root.Pipe = Pipe;
+	root.addModule(Pipe);
 }) ();
