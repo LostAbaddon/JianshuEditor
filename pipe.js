@@ -1,5 +1,5 @@
 /*
- * @ModuleName: Popline
+ * @ModuleName: Pipe
  * @Author: LostAbaddon
  * @Date:   2015-05-06 12:08:52
  * @Last Modified by:   LostAbaddon
@@ -29,19 +29,19 @@
 	// Requirement
 	if (!root.EventManager) return;
 
-	var TaskRing = function (popline, currentIndex) {
-		this.popline = popline;
+	var TaskRing = function (pipe, currentIndex) {
+		this.pipe = pipe;
 
 		this.check = function (index) {
 			return index === currentIndex;
 		};
 		this.done = function () {
-			this.popline = null;
+			this.pipe = null;
 			currentIndex = NaN;
 		};
 	};
 
-	var Popline = function () {
+	var Pipe = function () {
 		this.pool = [];
 		this.running = false;
 		this.index = -1;
@@ -50,23 +50,23 @@
 		// Add Event Manager
 		new root.EventManager(this);
 	};
-	Popline.prototype.count = function () {
+	Pipe.prototype.count = function () {
 		return this.pool.length;
 	};
-	Popline.prototype.waiting = function () {
+	Pipe.prototype.waiting = function () {
 		return this.pool.length - this.index - 1;
 	};
-	Popline.prototype.addTask = function (task) {
+	Pipe.prototype.addTask = function (task) {
 		if (this.running) return;
 		this.pool.push(task);
 	};
-	Popline.prototype.removeTask = function (task) {
+	Pipe.prototype.removeTask = function (task) {
 		if (this.running) return;
 		this.pool = this.pool.filter(function (t) {
 			return t !== task;
 		});
 	};
-	Popline.prototype.run = function () {
+	Pipe.prototype.run = function () {
 		if (this.pool.length === 0) return;
 		this.running = true;
 		var total = this.pool.length - 1;
@@ -85,7 +85,7 @@
 			this.running = false;
 		}
 	};
-	Popline.prototype.submit = function (taskRing) {
+	Pipe.prototype.submit = function (taskRing) {
 		if (!this.running) return;
 		if (this.ring !== taskRing || !taskRing.check(this.index)) return;
 		taskRing.done();
@@ -117,12 +117,12 @@
 			}
 		}
 	};
-	Popline.prototype.clear = function () {
+	Pipe.prototype.clear = function () {
 		if (this.running) return;
 		this.pool = [];
 		this.index = -1;
 	};
 
 	// Exports
-	root.Popline = Popline;
+	root.Pipe = Pipe;
 }) ();
