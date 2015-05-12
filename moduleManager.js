@@ -3,7 +3,7 @@
  * @Author: LostAbaddon
  * @Date:   2015-05-06 10:19:27
  * @Last Modified by:   LostAbaddon
- * @Last Modified time: 2015-05-12 10:08:46
+ * @Last Modified time: 2015-05-12 10:54:57
  */
 
 (function () {
@@ -73,11 +73,9 @@
 			if (old_version >= version) return;
 			module.old = old_module;
 			root[name] = module;
-			console.log('Replace Old One: ' + name);
 		}
 		else {
 			root[name] = module;
-			console.log('Add New One: ' + name);
 		}
 	};
 
