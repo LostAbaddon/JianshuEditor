@@ -3,7 +3,7 @@
  * @Author: LostAbaddon
  * @Date:   2015-05-06 10:19:27
  * @Last Modified by:   LostAbaddon
- * @Last Modified time: 2015-05-06 12:14:40
+ * @Last Modified time: 2015-05-12 10:12:57
  */
 
 (function () {
@@ -24,10 +24,8 @@
 			if (!window.jLAss) window.jLAss = {};
 			root = window.jLAss;
 		}
+		if (!root.addModule) root.addModule = function () {};
 	}) ();
-
-	// Requirement
-	if (!root.addModule) return;
 
 	var EventObject = function (name, target, eventManager) {
 		this.name = name;

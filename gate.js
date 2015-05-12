@@ -3,7 +3,7 @@
  * @Author: LostAbaddon
  * @Date:   2015-05-06 12:08:52
  * @Last Modified by:   LostAbaddon
- * @Last Modified time: 2015-05-06 13:42:59
+ * @Last Modified time: 2015-05-12 10:13:26
  */
 
 (function () {
@@ -24,11 +24,8 @@
 			if (!window.jLAss) window.jLAss = {};
 			root = window.jLAss;
 		}
+		if (!root.addModule) root.addModule = function () {};
 	}) ();
-
-	// Requirement
-	if (!root.addModule) return;
-	if (!root.EventManager) return;
 
 	var Key = function (id, gate, isOmni) {
 		var open = false;
@@ -123,6 +120,12 @@
 	// Module Info
 	Gate.ModuleName = 'Gate';
 	Gate.ModuleVersion = 1;
+	Gate.ModuleRequirement = [
+		{
+			name: 'EventManager',
+			min: 1
+		}
+	];
 
 	// Exports
 	root.addModule(Gate);
