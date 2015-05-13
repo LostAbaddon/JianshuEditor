@@ -1,9 +1,9 @@
 /*
- * @ModuleName: EventManager
+ * @ModuleName: ModuleManager
  * @Author: LostAbaddon
  * @Date:   2015-05-06 10:19:27
  * @Last Modified by:   LostAbaddon
- * @Last Modified time: 2015-05-12 10:54:57
+ * @Last Modified time: 2015-05-13 10:40:27
  */
 
 (function () {
@@ -30,6 +30,7 @@
 		if (!module) return false;
 		if (!module.ModuleName) return false;
 		if (isNaN(module.ModuleVersion)) return false;
+		module.ModuleVersion = Math.floor(module.ModuleVersion);
 		module.ModuleRequirement = module.ModuleRequirement || [];
 		return true;
 	}
@@ -71,7 +72,13 @@
 		if (old_module) {
 			var old_version = old_module.ModuleVersion;
 			if (old_version >= version) return;
-			module.old = old_module;
+			module['v' + old_version] = old_module;
+			Object.keys(old_module).filter(function (name) {
+				return !!name.match(/^v\d+$/);
+			}).map(function (ov) {
+				module[ov] = old_module[ov];
+				delete old_module[ov];
+			});
 			root[name] = module;
 		}
 		else {
