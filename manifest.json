@@ -17,7 +17,7 @@
 	"icons": {"48": "icon.png"},
 
 	"background": {
-		"scripts": ["moduleManager.js", "eventManager.js", "broadcast.js", "pipe.js", "gate.js", "servo.js"]
+		"scripts": ["jLAss/moduleManager.js", "jLAss/eventManager.js", "jLAss/broadcast.js", "jLAss/pipe.js", "jLAss/gate.js", "servo.js"]
 	},
 
 	"content_scripts": [
